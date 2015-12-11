@@ -142,3 +142,27 @@ class ResourceManagerHAConfigurationError(e.SaharaException):
         self.message = self.base_message % message
 
         super(ResourceManagerHAConfigurationError, self).__init__()
+
+
+class ImageValidationSpecificationError(e.SaharaException):
+    """Exception indicating that an image validation spec is in error."""
+
+    base_message = _("Image validation spec is in error: %s")
+
+    def __init__(self, message, *args):
+        self.code = "IMAGE_SPECIFICATION_ERROR"
+        self.message = self.base_message % message
+
+        super(ImageValidationSpecificationError, self).__init__()
+
+
+class ImageValidationError(e.SaharaException):
+    """Exception indicating that an image has failed validation."""
+
+    base_message = _("Image has failed validation: %s")
+
+    def __init__(self, message):
+        self.code = "IMAGE_VALIDATION_FAILED"
+        self.message = self.base_message % message
+
+        super(ImageValidationError, self).__init__()
