@@ -23,6 +23,8 @@ from sahara.plugins.cdh.v5_4_0 import deploy as dp
 from sahara.plugins.cdh.v5_4_0 import edp_engine
 from sahara.plugins.cdh.v5_4_0 import plugin_utils as pu
 from sahara.plugins.cdh.v5_4_0 import validation as vl
+from sahara.plugins import images
+from sahara.plugins import utils as gu
 
 
 conductor = conductor.API
@@ -114,3 +116,10 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def recommend_configs(self, cluster, scaling):
         PU.recommend_configs(cluster, self.get_plugin_configs(), scaling)
+
+    def validate_images(self, cluster, reconcile=True):
+        validation_path = 'plugins/cdh/v5_3_0/resources/image_validation.yaml'
+        validator = images.SaharaImageValidator.from_yaml(validation_path)
+        instances = gu.get_instances(cluster)
+        images.validate_instance(
+            instances[0], [validator], reconcile=reconcile)

@@ -25,6 +25,7 @@ import yaml
 
 from sahara.i18n import _
 from sahara.plugins import exceptions
+from sahara.utils import files
 
 
 def validate_instance(instance, validators, reconcile=True, **kwargs):
@@ -83,7 +84,7 @@ class SaharaImageValidatorBase(ImageValidator):
     def from_yaml(cls, yaml_path, validator_map=None, resource_roots=None):
         """Constructs and returns a validator from the provided yaml file.
 
-        :param yaml_path: The path to a yaml file.
+        :param yaml_path: The relative path to a yaml file.
         :param validator_map: A map of validator name to class. Each class is
             expected to descend from SaharaImageValidator. This method will
             use the static map of validator name to class provided in the
@@ -94,12 +95,12 @@ class SaharaImageValidatorBase(ImageValidator):
             be pulled from the first path in the list at which a file exists.
         """
 
+        file_text = files.get_file_text(yaml_path)
         validator_map = validator_map or {}
         resource_roots = resource_roots or []
         validator_map = cls.get_validator_map(validator_map)
-        with open(yaml_path, 'r') as yaml_stream:
-            spec = yaml.safe_load(yaml_stream)
-            return cls.from_spec(spec, validator_map, resource_roots)
+        spec = yaml.safe_load(file_text)
+        return cls.from_spec(spec, validator_map, resource_roots)
 
     @classmethod
     def from_spec(cls, spec, validator_map, resource_roots):

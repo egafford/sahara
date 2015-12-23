@@ -265,6 +265,8 @@ def _provision_cluster(cluster_id):
         shares.mount_shares(cluster)
 
         context.set_step_type(_("Plugin: configure cluster"))
+        if hasattr(plugin, 'validate_images'):
+            plugin.validate_images(cluster, reconcile=True)
         plugin.configure_cluster(cluster)
 
         # starting prepared and configured cluster

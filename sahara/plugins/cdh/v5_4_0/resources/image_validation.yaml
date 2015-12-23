@@ -1,0 +1,3 @@
+validators:
+  - package: ntp
+  - package: fish_taco

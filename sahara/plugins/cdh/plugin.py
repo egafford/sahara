@@ -54,6 +54,11 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return self._get_version_handler(
             cluster.hadoop_version).validate(cluster)
 
+    def validate_images(self, cluster, reconcile=True):
+        return self._get_version_handler(
+            cluster.hadoop_version).validate_images(
+            cluster, reconcile=reconcile)
+
     def scale_cluster(self, cluster, instances):
         return self._get_version_handler(
             cluster.hadoop_version).scale_cluster(cluster, instances)
