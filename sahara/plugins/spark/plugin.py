@@ -22,6 +22,7 @@ from sahara import conductor
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
+from sahara.plugins import images
 from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
 from sahara.plugins import recommendations_utils as ru
@@ -110,6 +111,12 @@ class SparkProvider(p.ProvisioningPluginBase):
     def configure_cluster(self, cluster):
         self._setup_instances(cluster)
 
+    def _validate_images(self, cluster):
+        validator_path = 'plugins/spark/resources/images/image.yaml'
+        validator = images.SaharaImageValidator.from_yaml(validator_path)
+        for instance in utils.get_instances(cluster):
+            images.validate_instance(instance, [validator], reconcile=True)
+
     @cpo.event_wrapper(
         True, step=utils.start_process_event_message("NameNode"))
     def _start_namenode(self, nn_instance):
@@ -120,6 +127,7 @@ class SparkProvider(p.ProvisioningPluginBase):
     def start_spark(self, cluster):
         sm_instance = utils.get_instance(cluster, "master")
         if sm_instance:
+
             self._start_spark(cluster, sm_instance)
 
     @cpo.event_wrapper(
