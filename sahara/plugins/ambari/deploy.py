@@ -233,7 +233,7 @@ def update_default_ambari_password(cluster):
                    param=('cluster', 0))
 def wait_host_registration(cluster, instances):
     with _get_ambari_client(cluster) as client:
-        kwargs = {"client": client, "instances": instances}
+        kwargs = {"client": client, "instances": instances}h
         poll_utils.poll(_check_host_registration, kwargs=kwargs, timeout=600)
 
 

@@ -1,6 +1,61 @@
 arguments:
-  fish:
-    description: awesome
-    default: trout
+  ambari_version:
+    description: The version of Ambari to install. Defaults to 2.2.1.0.
+    default: 2.2.1.0
+    choices:
+      - 2.2.0.0  # HDP 2.3
+      - 2.2.1.0  # HDP 2.4
+  java_distro:
+    default: openjdk
+    description: The distribution of Java to install. Defaults to openjdk.
+    choices:
+      - openjdk
+      - oracle-java
 
-validators: []
+validators:
+  - package: wget
+  - os_case:
+      - centos:
+          - script:
+              centos/wget_repo:
+                env_vars: [ambari_version]
+          - package: mariadb
+          - package: mariadb-libs
+          - package: mariadb-server
+          - package: mysql-connector-java
+          - package: ntp
+          #- ambari-metrics-monitor
+          #- ambari-server
+          #- ambari-metrics-collector
+          #- redhat-lsb
+          #- nmap-ncat
+          #- fuse-libs
+          #- snappy-devel
+      - ubuntu:
+          - script:
+              ubuntu/wget_repo:
+                env_vars: [ambari_version]
+          - package:
+              - ambari-metrics-assembly
+              - netcat
+              - fuse
+              - mysql-client-5.5
+              - mysql-server-5.5
+              - libmysql-java
+#  - package:
+#    - ambari-agent
+#    - ambari-metrics-hadoop-sink
+#    - unzip
+#    - curl
+#    - tar
+#    - zip
+#    - rpcbind
+#  - os_case:
+#      - centos:
+#          - script: centos/disable_ambari
+
+#java
+#mysql
+#centos: disable-selinux
+#centos: disable-firewall
+#swift-hadoop

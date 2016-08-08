@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from sahara import conductor
 from sahara import context
 from sahara.i18n import _
@@ -23,6 +22,7 @@ from sahara.plugins.ambari import deploy
 from sahara.plugins.ambari import edp_engine
 from sahara.plugins.ambari import health
 from sahara.plugins.ambari import validation
+from sahara.plugins import images
 from sahara.plugins import kerberos
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
@@ -263,3 +263,24 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
 
     def get_health_checks(self, cluster):
         return health.get_health_checks(cluster)
+
+    validator = images.SaharaImageValidator.from_yaml(
+        'plugins/ambari/resources/images/image.yaml',
+        resource_roots=['plugins/ambari/resources/images'])
+
+    def get_image_arguments(self, hadoop_version):
+        if hadoop_version != '2.4':
+            return NotImplemented
+        return self.validator.get_argument_list()
+
+    def pack_image(self, hadoop_version, remote,
+                   reconcile=True, image_arguments=None):
+        self.validator.validate(remote, reconcile=reconcile,
+                                image_arguments=image_arguments)
+
+    def validate_images(self, cluster, reconcile=True, image_arguments=None):
+        instances = cluster.instances if reconcile else [cluster.instances[0]]
+        for instance in instances:
+            with instance.remote() as r:
+                self.validator.validate(r, reconcile=reconcile,
+                                        image_arguments=image_arguments)
